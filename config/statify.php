@@ -34,9 +34,21 @@ return [
     |--------------------------------------------------------------------------
     |
     | How long (in seconds) to cache the stats response.
+    | Set to 0 to disable caching entirely.
     |
     */
-    'cache_ttl' => 60,
+    'cache_ttl' => env('STATIFY_CACHE_TTL', 60),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Key Prefix
+    |--------------------------------------------------------------------------
+    |
+    | Prefix for all cache keys used by Statify.
+    | Change this if multiple apps share the same cache store.
+    |
+    */
+    'cache_prefix' => env('STATIFY_CACHE_PREFIX', 'statify'),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,8 +56,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | The URL prefix for the Statify API routes.
+    | Set to null or false (STATIFY_PREFIX=) to disable route registration.
     |
     */
-    'prefix' => 'api/statify',
+    'prefix' => env('STATIFY_PREFIX', 'api/statify'),
 
 ];
