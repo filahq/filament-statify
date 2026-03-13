@@ -8,15 +8,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+**Run from the parent app root** (`/Volumes/DevDisk/code/filament5/`), not the package root.
+
 ```bash
 # Run all tests
-php artisan test --compact
+cd /Volumes/DevDisk/code/filament5 && php artisan test --compact --filter=Statify
 
 # Run a specific test file or filter
-php artisan test --compact --filter=TestName
+cd /Volumes/DevDisk/code/filament5 && php artisan test --compact --filter=TestName
 
 # Fix code style
-vendor/bin/pint --dirty --format agent
+cd /Volumes/DevDisk/code/filament5 && vendor/bin/pint packages/statify/src/... --format agent
 ```
 
 ## API Endpoints
@@ -27,8 +29,9 @@ vendor/bin/pint --dirty --format agent
 Configured via `config/statify.php`:
 - `statify.guard` — Auth mode: `token` (default) or `sanctum`
 - `statify.token` — Static API token for `token` guard (`null` = open access)
-- `statify.cache_ttl` — Cache lifetime in seconds (default: 60)
-- `statify.prefix` — Route prefix (default: `api/statify`)
+- `statify.cache_ttl` — Cache lifetime in seconds (default: 60, `0` = no cache)
+- `statify.cache_prefix` — Cache key prefix (default: `statify`)
+- `statify.prefix` — Route prefix (default: `api/statify`, `null`/`false` = routes disabled)
 
 ## Authentication
 
@@ -73,5 +76,7 @@ Two modes via `STATIFY_GUARD` env var:
 
 ### Testing Notes
 
+- **Tests live in the parent app** at `/Volumes/DevDisk/code/filament5/tests/Feature/Statify/` and `tests/Unit/Statify/` — the package has no test infrastructure of its own
+- **Two git repos**: commit package source from `/Volumes/DevDisk/code/filament5/packages/statify`; test files belong to the parent app repo and must be committed separately
 - Tests must call `WidgetRegistry::flush()` in `beforeEach` to clear widgets registered by the app's `AdminPanelProvider`
 - Sanctum tests use `Sanctum::actingAs()` with `User::factory()->make()` (no DB needed)
