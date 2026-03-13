@@ -48,17 +48,24 @@ class StatData implements Arrayable
 
     protected static function extractRawValue(string $value): int|float|null
     {
-        $cleaned = preg_replace('/[^0-9.\-]/', '', $value);
+        // Strip thousands separators and whitespace
+        $cleaned = preg_replace('/[,_\s]/', '', $value);
 
-        if ($cleaned === '' || $cleaned === null) {
+        // Detect a leading negative sign before any currency symbols
+        $negative = str_starts_with($cleaned, '-');
+
+        // Extract the first numeric sequence (integer or decimal)
+        if (! preg_match('/\d+\.?\d*/', $cleaned, $matches)) {
             return null;
         }
 
-        if (str_contains($cleaned, '.')) {
-            return (float) $cleaned;
+        $number = $negative ? '-'.$matches[0] : $matches[0];
+
+        if (str_contains($number, '.')) {
+            return (float) $number;
         }
 
-        return (int) $cleaned;
+        return (int) $number;
     }
 
     /**
