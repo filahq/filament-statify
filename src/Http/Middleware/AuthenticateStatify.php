@@ -10,6 +10,16 @@ class AuthenticateStatify
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $guard = config('statify.guard', 'token');
+
+        return match ($guard) {
+            'sanctum' => $this->authenticateWithSanctum($request, $next),
+            default => $this->authenticateWithToken($request, $next),
+        };
+    }
+
+    protected function authenticateWithToken(Request $request, Closure $next): Response
+    {
         $token = config('statify.token');
 
         if ($token === null) {
@@ -19,6 +29,15 @@ class AuthenticateStatify
         $provided = $request->query('token') ?? $request->bearerToken();
 
         if (! hash_equals((string) $token, (string) $provided)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $next($request);
+    }
+
+    protected function authenticateWithSanctum(Request $request, Closure $next): Response
+    {
+        if (! auth('sanctum')->check()) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 

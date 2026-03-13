@@ -20,8 +20,9 @@ php artisan vendor:publish --tag=statify-config
 // config/statify.php
 
 return [
-    'token' => env('STATIFY_TOKEN'),  // null = open access
-    'cache_ttl' => 60,                // seconds
+    'guard' => env('STATIFY_GUARD', 'token'), // "token" or "sanctum"
+    'token' => env('STATIFY_TOKEN'),           // for "token" guard; null = open access
+    'cache_ttl' => 60,                         // seconds
     'prefix' => 'api/statify',
 ];
 ```
@@ -72,13 +73,17 @@ The widget slug is the kebab-case version of the class name (e.g., `RevenueStats
 
 ### Authentication
 
-Set `STATIFY_TOKEN` in your `.env` file to enable token authentication:
+Statify supports two authentication modes, configured via `STATIFY_GUARD`:
+
+#### Static Token (default)
+
+Set `STATIFY_TOKEN` in your `.env` file:
 
 ```env
 STATIFY_TOKEN=your-secret-token
 ```
 
-Then authenticate via query parameter or header:
+Authenticate via query parameter or header:
 
 ```
 GET /api/statify/stats?token=your-secret-token
@@ -86,6 +91,28 @@ GET /api/statify/stats?token=your-secret-token
 
 ```
 Authorization: Bearer your-secret-token
+```
+
+If no token is configured, the API is open (no auth required).
+
+#### Laravel Sanctum
+
+Set the guard to Sanctum in your `.env`:
+
+```env
+STATIFY_GUARD=sanctum
+```
+
+Generate a personal access token for your user:
+
+```php
+$token = $user->createToken('statify')->plainTextToken;
+```
+
+Authenticate with the Sanctum token:
+
+```
+Authorization: Bearer {sanctum-token}
 ```
 
 ### Response Format

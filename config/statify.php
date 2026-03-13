@@ -4,10 +4,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | API Token
+    | Authentication Guard
     |--------------------------------------------------------------------------
     |
-    | The token used to authenticate API requests. If null, the API is open.
+    | The authentication method for the Statify API.
+    |
+    | Supported: "token", "sanctum"
+    |
+    | - "token": Uses a static token from STATIFY_TOKEN env var.
+    | - "sanctum": Uses Laravel Sanctum personal access tokens.
+    |
+    */
+    'guard' => env('STATIFY_GUARD', 'token'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Token (for "token" guard)
+    |--------------------------------------------------------------------------
+    |
+    | The static token used to authenticate API requests.
+    | If null and guard is "token", the API is open (no auth).
     |
     */
     'token' => env('STATIFY_TOKEN'),

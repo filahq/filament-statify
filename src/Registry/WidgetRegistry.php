@@ -22,4 +22,9 @@ class WidgetRegistry
     {
         return array_unique($this->widgets);
     }
+
+    public function flush(): void
+    {
+        $this->widgets = [];
+    }
 }

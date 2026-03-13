@@ -21,15 +21,21 @@ vendor/bin/pint --dirty --format agent
 
 ## API Endpoints
 
-Both endpoints are protected by token-based auth (query param `?token=` or `Authorization` header).
-
 - `GET /api/statify/stats` — All registered widget stats
 - `GET /api/statify/widgets/{widget}` — Stats for a specific widget by slug
 
 Configured via `config/statify.php`:
-- `statify.token` — API token (`null` = open access)
+- `statify.guard` — Auth mode: `token` (default) or `sanctum`
+- `statify.token` — Static API token for `token` guard (`null` = open access)
 - `statify.cache_ttl` — Cache lifetime in seconds (default: 60)
 - `statify.prefix` — Route prefix (default: `api/statify`)
+
+## Authentication
+
+Two modes via `STATIFY_GUARD` env var:
+
+- **`token`** (default): Static token via `STATIFY_TOKEN`. Accepts `?token=` query param or `Authorization: Bearer` header. No token configured = open access.
+- **`sanctum`**: Laravel Sanctum personal access tokens via `Authorization: Bearer` header.
 
 ## Architecture
 
@@ -50,17 +56,22 @@ Configured via `config/statify.php`:
 | `src/Statify.php` | Facade / entry point |
 | `src/StatifyPlugin.php` | Filament plugin contract implementation |
 | `src/StatifyServiceProvider.php` | Route registration, config merge, singleton binding |
-| `src/Registry/WidgetRegistry.php` | In-memory widget class registry |
+| `src/Registry/WidgetRegistry.php` | In-memory widget class registry (with `flush()` for testing) |
 | `src/Extractors/WidgetStatExtractor.php` | Reflection-based `getStats()` invoker |
 | `src/Support/StatData.php` | DTO: converts Filament `Stat` → JSON-serializable array |
 | `src/Http/Controllers/StatsController.php` | API endpoints with caching |
-| `src/Http/Middleware/AuthenticateStatify.php` | Token auth (`hash_equals` for timing-safe comparison) |
+| `src/Http/Middleware/AuthenticateStatify.php` | Auth middleware (static token or Sanctum) |
 | `config/statify.php` | Package configuration |
 
 ### StatData Transformation
 
 `StatData::fromStat()` converts a Filament `Stat` object and extracts:
-- `id` — slug from label
+- `id` — slug from label via `Str::slug()`
 - `label`, `value`, `description`, `color`, `chart`
 - `icon` — converts `Heroicon` enum to string
 - `raw_value` — strips formatting from value string via regex to get a numeric value
+
+### Testing Notes
+
+- Tests must call `WidgetRegistry::flush()` in `beforeEach` to clear widgets registered by the app's `AdminPanelProvider`
+- Sanctum tests use `Sanctum::actingAs()` with `User::factory()->make()` (no DB needed)
