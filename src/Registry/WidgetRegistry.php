@@ -2,9 +2,11 @@
 
 namespace FilaHQ\Statify\Registry;
 
+use Illuminate\Support\Str;
+
 class WidgetRegistry
 {
-    /** @var array<int, class-string> */
+    /** @var array<class-string, class-string> */
     protected array $widgets = [];
 
     /**
@@ -12,7 +14,9 @@ class WidgetRegistry
      */
     public function register(array $widgets): void
     {
-        $this->widgets = array_merge($this->widgets, $widgets);
+        foreach ($widgets as $widget) {
+            $this->widgets[$widget] = $widget;
+        }
     }
 
     /**
@@ -20,7 +24,12 @@ class WidgetRegistry
      */
     public function getWidgets(): array
     {
-        return array_unique($this->widgets);
+        return array_values($this->widgets);
+    }
+
+    public function getSlug(string $widgetClass): string
+    {
+        return Str::kebab(class_basename($widgetClass));
     }
 
     public function flush(): void
