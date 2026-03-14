@@ -1,6 +1,21 @@
 {
+  "permissions": {
+    "allow": [
+      "Read(//Volumes/DevDisk/code/filament5/**)",
+      "Bash(php artisan:*)",
+      "Bash(cd /Volumes/DevDisk/code/filament5 && vendor/bin/pint packages/statify/src/Registry/WidgetRegistry.php --format agent 2>&1)",
+      "Bash(git add:*)",
+      "Bash(git -C /Volumes/DevDisk/code/filament5/packages/statify add src/Registry/WidgetRegistry.php && git -C /Users/knight/Dev/code/filament5 add tests/Unit/Statify/WidgetRegistryTest.php 2>&1 || true; git -C /Volumes/DevDisk/code/filament5/packages/statify status 2>&1)",
+      "Bash(git -C /Users/knight/Dev/code/filament5 add tests/Unit/Statify/WidgetRegistryTest.php 2>&1; git -C /Users/knight/Dev/code/filament5 status 2>&1 | head -20)",
+      "Bash(GIT_DISCOVERY_ACROSS_FILESYSTEM=1 git -C /Users/knight/Dev/code/filament5 status 2>&1 | head -5)",
+      "Bash(cd /Volumes/DevDisk/code/filament5 && vendor/bin/pint packages/statify/config/statify.php packages/statify/src/StatifyServiceProvider.php --format agent 2>&1)",
+      "Bash(cd /Volumes/DevDisk/code/filament5 && php artisan tinker --execute \"\n\\\\$value = '-\\\\$1,234.56';\n\\\\$cleaned = preg_replace\\('/[^0-9.\\\\-]/', '', \\\\$value\\);\necho var_export\\(\\\\$cleaned, true\\) . PHP_EOL;\n\\\\$number = \\(float\\) \\\\$cleaned;\necho var_export\\(\\\\$number, true\\) . PHP_EOL;\n\")",
+      "Bash(cd /Volumes/DevDisk/code/filament5 && php artisan tinker --execute \"\n// Test cases\n\\\\$tests = ['\\\\$2,430', '-\\\\$1,234.56', '42', '3.14', 'N/A'];\nforeach \\(\\\\$tests as \\\\$value\\) {\n    \\\\$cleaned = preg_replace\\('/[,_\\\\s]/', '', \\\\$value\\);\n    echo 'input: ' . \\\\$value . ' => cleaned: ' . \\\\$cleaned . PHP_EOL;\n    if \\(preg_match\\('/-?[^0-9]*\\(-?[\\\\d]+\\\\.?[\\\\d]*\\)/', \\\\$cleaned, \\\\$matches\\)\\) {\n        echo '  match[0]=' . \\\\$matches[0] . ' match[1]=' . \\\\$matches[1] . PHP_EOL;\n    } else {\n        echo '  no match' . PHP_EOL;\n    }\n}\n\")",
+      "Bash(cd /Volumes/DevDisk/code/filament5 && vendor/bin/pint packages/statify/src/Support/StatData.php --format agent 2>&1)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "laravel-boost"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

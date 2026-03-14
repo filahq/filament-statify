@@ -18,7 +18,7 @@ cd /Volumes/DevDisk/code/filament5 && php artisan test --compact --filter=Statif
 cd /Volumes/DevDisk/code/filament5 && php artisan test --compact --filter=TestName
 
 # Fix code style
-cd /Volumes/DevDisk/code/filament5 && vendor/bin/pint packages/statify/src/... --format agent
+cd /Volumes/DevDisk/code/filament5 && vendor/bin/pint --dirty --format agent
 ```
 
 ## API Endpoints
@@ -76,7 +76,7 @@ Two modes via `STATIFY_GUARD` env var:
 
 ### Testing Notes
 
-- **Tests live in the parent app** at `/Volumes/DevDisk/code/filament5/tests/Feature/Statify/` and `tests/Unit/Statify/` — the package has no test infrastructure of its own
-- **Two git repos**: commit package source from `/Volumes/DevDisk/code/filament5/packages/statify`; test files belong to the parent app repo and must be committed separately
+- **Tests live in the package** at `packages/statify/tests/Feature/` and `packages/statify/tests/Unit/`
+- The parent app's `phpunit.xml` includes these directories, and `tests/Pest.php` extends `Tests\TestCase` into the package feature directory so HTTP helpers like `$this->getJson()` work
 - Tests must call `WidgetRegistry::flush()` in `beforeEach` to clear widgets registered by the app's `AdminPanelProvider`
 - Sanctum tests use `Sanctum::actingAs()` with `User::factory()->make()` (no DB needed)
