@@ -23,6 +23,7 @@ return [
     'guard' => env('STATIFY_GUARD', 'token'), // "token" or "sanctum"
     'token' => env('STATIFY_TOKEN'),           // for "token" guard; null = open access
     'cache_ttl' => 60,                         // seconds
+    'cache_prefix' => 'statify',
     'prefix' => 'api/statify',
 ];
 ```
@@ -103,6 +104,8 @@ Set the guard to Sanctum in your `.env`:
 STATIFY_GUARD=sanctum
 ```
 
+Install and configure Laravel Sanctum in your application before using this mode.
+
 Generate a personal access token for your user:
 
 ```php
@@ -119,9 +122,10 @@ Authorization: Bearer {sanctum-token}
 
 ```json
 {
-  "generated_at": "2026-03-13T12:00:00+00:00",
-  "widgets": [
+  "responded_at": "2026-03-13T12:00:00+00:00",
+  "stats": [
     {
+      "widget": "revenue-stats-widget",
       "id": "revenue-today",
       "label": "Revenue Today",
       "value": "$2,430",

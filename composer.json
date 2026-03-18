@@ -3,6 +3,16 @@
     "description": "Export your Filament stat widgets as API.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "filament",
+        "laravel",
+        "widget",
+        "stats",
+        "api"
+    ],
+    "suggest": {
+        "laravel/sanctum": "Required if you configure STATIFY_GUARD=sanctum."
+    },
     "require": {
         "php": "^8.2",
         "filament/filament": "^5.0",
@@ -24,7 +34,5 @@
                 "FilaHQ\\Statify\\StatifyServiceProvider"
             ]
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
