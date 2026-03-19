@@ -8,6 +8,14 @@ Export your Filament stat widgets as API.
 composer require filahq/statify
 ```
 
+Statify's core package only requires Filament widgets.
+
+If you also want the optional `StatifyPlugin` panel integration, install the full Filament package in your app:
+
+```bash
+composer require filament/filament
+```
+
 Publish the config:
 
 ```bash
@@ -43,7 +51,7 @@ Statify::widgets([
 ]);
 ```
 
-Or use the Filament plugin in your panel provider:
+Or, if your app has the full `filament/filament` package installed, use the optional Filament plugin in your panel provider:
 
 ```php
 use FilaHQ\Statify\StatifyPlugin;
