@@ -9,6 +9,7 @@ composer require filahq/statify
 ```
 
 Statify's core package only requires Filament widgets.
+It supports both Filament 4 and Filament 5.
 
 If you also want the optional `StatifyPlugin` panel integration, install the full Filament package in your app:
 
