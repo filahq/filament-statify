@@ -9,10 +9,11 @@ return [
     |
     | The authentication method for the Statify API.
     |
-    | Supported: "token", "sanctum"
+    | Supported: "token", "sanctum", "public"
     |
     | - "token": Uses a static token from STATIFY_TOKEN env var.
     | - "sanctum": Uses Laravel Sanctum personal access tokens.
+    | - "public": Explicitly allows unauthenticated access.
     |
     */
     'guard' => env('STATIFY_GUARD', 'token'),
@@ -23,10 +24,17 @@ return [
     |--------------------------------------------------------------------------
     |
     | The static token used to authenticate API requests.
-    | If null and guard is "token", the API is open (no auth).
+    | A non-empty token is required when guard is "token".
     |
     */
     'token' => env('STATIFY_TOKEN'),
+
+    // Optional Sanctum token ability; application policies can be enforced with
+    // Statify::authorizeUsing() in a service provider.
+    'ability' => env('STATIFY_ABILITY'),
+
+    // Optional display names keyed by the registered widget slug.
+    'widget_names' => [],
 
     /*
     |--------------------------------------------------------------------------

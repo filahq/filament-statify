@@ -15,6 +15,7 @@ class StatifyServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/statify.php', 'statify');
 
         $this->app->singleton(WidgetRegistry::class);
+        $this->app->singleton(Statify::class);
     }
 
     public function boot(): void

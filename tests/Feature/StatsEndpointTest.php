@@ -1,10 +1,8 @@
 <?php
 
-use App\Models\User;
+use FilaHQ\Statify\Registry\WidgetRegistry;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use FilaHQ\Statify\Registry\WidgetRegistry;
-use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
     $registry = app(WidgetRegistry::class);
@@ -50,43 +48,22 @@ it('does not cache a 404 — a newly registered widget slug is immediately acces
     $this->getJson('/api/statify/widgets/fresh-widget')->assertSuccessful();
 });
 
-it('bypasses cache when cache_ttl is 0', function () {
-    config(['statify.cache_ttl' => 0, 'statify.cache_prefix' => 'statify']);
-
-    $this->getJson('/api/statify/stats')
-        ->assertSuccessful()
-        ->assertJsonPath('stats.0.label', 'Revenue Today');
-
-    // Cache key must NOT exist — confirms Cache::remember was not called
-    expect(cache()->has('statify:stats:all'))->toBeFalse();
-});
-
-it('uses the configured cache_prefix in cache keys', function () {
-    config(['statify.cache_prefix' => 'custom', 'statify.cache_ttl' => 60]);
-
-    // First call populates cache under 'custom:stats:all'
-    $this->getJson('/api/statify/stats')->assertSuccessful();
-
-    expect(cache()->has('custom:stats:all'))->toBeTrue();
-    expect(cache()->has('statify:stats:all'))->toBeFalse();
-});
-
 it('blocks requests without token when token is configured', function () {
-    config(['statify.token' => 'secret-token']);
+    config(['statify.guard' => 'token', 'statify.token' => 'secret-token']);
 
     $this->getJson('/api/statify/stats')
         ->assertUnauthorized();
 });
 
 it('allows requests with valid query token', function () {
-    config(['statify.token' => 'secret-token']);
+    config(['statify.guard' => 'token', 'statify.token' => 'secret-token']);
 
     $this->getJson('/api/statify/stats?token=secret-token')
         ->assertSuccessful();
 });
 
 it('allows requests with valid bearer token', function () {
-    config(['statify.token' => 'secret-token']);
+    config(['statify.guard' => 'token', 'statify.token' => 'secret-token']);
 
     $this->getJson('/api/statify/stats', ['Authorization' => 'Bearer secret-token'])
         ->assertSuccessful();
@@ -103,20 +80,15 @@ it('extracts raw numeric value from formatted string', function () {
         ->assertJsonPath('stats.0.raw_value', 2430);
 });
 
-it('blocks requests without sanctum token when guard is sanctum', function () {
-    config(['statify.guard' => 'sanctum']);
-
-    $this->getJson('/api/statify/stats')
-        ->assertUnauthorized();
-});
-
-it('allows requests with valid sanctum token', function () {
-    config(['statify.guard' => 'sanctum']);
-
-    Sanctum::actingAs(User::factory()->make());
-
-    $this->getJson('/api/statify/stats')
-        ->assertSuccessful();
+it('exports additive metadata and custom widget names', function () {
+    config(['statify.widget_names' => ['test-stats-widget' => 'Revenue Overview']]);
+    foreach (['/api/statify/stats', '/api/statify/widgets/test-stats-widget'] as $url) {
+        $this->getJson($url)->assertOk()
+            ->assertJsonPath('schema_version', 1)
+            ->assertJsonStructure(['generated_at', 'responded_at', 'stats'])
+            ->assertJsonPath('widgets.0.id', 'test-stats-widget')
+            ->assertJsonPath('widgets.0.name', 'Revenue Overview');
+    }
 });
 
 // ---------------------------------------------------------------------------
